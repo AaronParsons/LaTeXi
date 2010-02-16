@@ -6,15 +6,25 @@ class _LatexTagRenderer(Renderer):
         return '(%s)%s(/%s)' % (node.nodeName, node, node.nodeName)
 
 class Renderer(Renderer):
+    caption_type = 'figure'
     list_prefix = ''
-    def center(self, text):
-        return '\n<center>%s</center>\n' % text
+    def default(self, node):
+		if node.nodeName == '\\': return u"<br>"
+		else: return unicode(node)
+    def do_center(self, node):
+        return '\n<center>%s</center>\n' % node
+    do_centering = do_center
     def do_par(self, node):
         return '\n\n%s\n\n' % unicode(node)
     def do_math(self, node):
         return '<math>%s</math>' % unicode(node.source).replace('$','')
     def do_equation(self, node):
-        return '\n\n<center><math>%s\,\!</math></center>\n\n' % unicode(node.source).replace('\[','').replace('\]','')
+        txt = unicode(node.source).strip()
+        txt = txt.replace(r'\begin{equation}','')
+        txt = txt.replace(r'\end{equation}','')
+        txt = txt.replace('\[','').replace('\]','')
+        #from IPython.Shell import IPShellEmbed; IPShellEmbed()()
+        return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     do_displaymath = do_eqnarray = do_equation
     def do_section(self, node):
         return u'\n\n== %s ==\n\n%s' % (node.fullTitle, node)
@@ -41,15 +51,26 @@ class Renderer(Renderer):
     def do_verbatim(self, node):
         return '<source lang="text">%s</source>' % unicode(node)
     def do_table(self, node):
-        return '\n<center>\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n</center>\n' % unicode(node)
+        self.caption_type = 'table'
+        #return '\n<center>\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n</center>\n' % unicode(node)
+        return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
     def do_caption(self, node):
-        return '''\n|+align="bottom" style="color:#e76700;" |''%s''\n''' % unicode(node)
+        cap = "''%s''" % unicode(node)
+        if self.caption_type == 'table':
+            return '''\n|+align="bottom" style="color:#e76700;" |%s\n''' % cap
+        elif self.caption_type == 'figure':
+            return '<br>%s' % cap
+        else:
+            return cap
     def do_ArrayRow(self, node):
         return '\n|-\n%s\n' % unicode(node)
     def do_ArrayCell(self, node):
         return '\n| %s\n' % unicode(node)
-    #def do_includegraphics(self, node):
-    #    return '[[File:%s|center|%s]]' % (unicode(node),
+    def do_figure(self, node):
+        self.caption_type = 'figure'
+        return unicode(node)
+    def do_includegraphics(self, node):
+        return '[[File:%s|250px]]' % (node.attributes['file'])
             
             
 if __name__ == '__main__':
@@ -58,10 +79,11 @@ if __name__ == '__main__':
     tex = TeX()
     filename = '/tmp/latex2wiki.txt'
     tex.ownerDocument.config['files']['filename'] = filename
-    tex.input(sys.stdin.read())
+    if True: tex.input(sys.stdin.read())
+    else: tex.input(open(sys.argv[-1]).read())
     doc = tex.parse()
-    renderer = Renderer()
-    #renderer = _LatexTagRenderer()
+    if True: renderer = Renderer()
+    else: renderer = _LatexTagRenderer()
     renderer.render(doc)
     lines = open(filename).readlines()
     
