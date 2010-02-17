@@ -1,5 +1,8 @@
 #! /usr/bin/env python
+import re
 from plasTeX.Renderers.Text import Renderer
+
+LABEL_REGX = re.compile(r'\\label{[^}]+}')
 
 class _LatexTagRenderer(Renderer):
     def default(self, node):
@@ -23,6 +26,7 @@ class Renderer(Renderer):
         txt = txt.replace(r'\begin{equation}','')
         txt = txt.replace(r'\end{equation}','')
         txt = txt.replace('\[','').replace('\]','')
+        txt = LABEL_REGX.sub('', txt)
         #from IPython.Shell import IPShellEmbed; IPShellEmbed()()
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     do_displaymath = do_eqnarray = do_equation
