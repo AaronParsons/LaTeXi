@@ -12,8 +12,9 @@ class Renderer(Renderer):
     caption_type = 'figure'
     list_prefix = ''
     def default(self, node):
-		if node.nodeName == '\\': return u"<br>"
-		else: return unicode(node)
+        if node.nodeName == '\\': return u"<br>"
+        elif node.nodeName == '_': return u"_"
+        else: return unicode(node)
     def do_center(self, node):
         return '\n<center>%s</center>\n' % node
     do_centering = do_center
@@ -41,11 +42,12 @@ class Renderer(Renderer):
     def do_bf(self, node):
         return "'''%s'''" % unicode(node)
     def do_item(self, node):
-        return "\n%s %s" % (self.list_prefix, unicode(node))
+        #return "\n%s %s" % (self.list_prefix, unicode(node))
+        return "\n%s %s" % (self.list_prefix, unicode(node).strip())
     def do_subitem(self, node):
-        return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node))
+        return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).strip())
     def do_subsubitem(self, node):
-        return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node))
+        return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node).strip())
     def do_itemize(self, node):
         self.list_prefix = '*'
         return unicode(node)
