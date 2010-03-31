@@ -12,11 +12,12 @@ class Renderer(Renderer):
     caption_type = 'figure'
     list_prefix = ''
     def default(self, node):
-        if node.nodeName == '\\': return u"<br>"
-        elif node.nodeName == '_': return u"_"
-        else: return unicode(node)
+		if node.nodeName == '\\': return u"<br>"
+		else: return unicode(node)
     def do_center(self, node):
         return '\n<center>%s</center>\n' % node
+    def do_title(self, node):
+        return '\n<h1>%s</h1>\n' % node
     do_centering = do_center
     def do_par(self, node):
         return '\n\n%s\n\n' % unicode(node)
@@ -39,15 +40,19 @@ class Renderer(Renderer):
         return u'\n\n==== %s ====\n\n%s' % (node.fullTitle, node)
     def do_it(self, node):
         return u"''%s''" % (node)
+    do_emph = do_it
     def do_bf(self, node):
         return "'''%s'''" % unicode(node)
     def do_item(self, node):
-        #return "\n%s %s" % (self.list_prefix, unicode(node))
-        return "\n%s %s" % (self.list_prefix, unicode(node).strip())
+        #if self.list_prefix == '': from IPython.Shell import IPShellEmbed; IPShellEmbed()()
+        return "\n%s '''%s'''%s" % (self.list_prefix, node.argSource[1:-1], unicode(node).lstrip())
     def do_subitem(self, node):
-        return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).strip())
+        return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).lstrip())
     def do_subsubitem(self, node):
-        return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node).strip())
+        return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node))
+    def do_description(self, node):
+        self.list_prefix = ':'
+        return unicode(node)
     def do_itemize(self, node):
         self.list_prefix = '*'
         return unicode(node)
@@ -58,6 +63,8 @@ class Renderer(Renderer):
         return '<source lang="text">%s</source>' % unicode(node)
     def do_table(self, node):
         self.caption_type = 'table'
+        return unicode(node)
+    def do_tabular(self, node):
         #return '\n<center>\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n</center>\n' % unicode(node)
         return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
     def do_caption(self, node):
