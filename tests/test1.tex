@@ -1,0 +1,90 @@
+\documentclass[11pt,english,twoside]{article}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{SPEAD: Streaming Protocol for Exchanging Astronomical Data}
+\author{Jason Manley, Marc Welz, Aaron Parsons}
+
+\references{references}
+
+\section{Scope}
+
+under\_line under\_line
+This document describes a datastream format suitable for use by radio astronomy instruments. The data stream is distinct from the \emph{KATCP} control protocol which follows a format described in \cite{ffdbectl}. 
+
+\section{Protocol Layers}
+
+The data is transmitted via a network interface. The network interface consists of the following layers, from top to bottom:
+
+\begin{description}
+
+\item[Application and Presentation]: The data format as described in later sections of this document.
+
+\item[Session and Transport]: UDP, noting that the receiving party can not request retransmission of lost, duplicated or corrupt packets.
+
+\item[Network]: IP (Internet protocol)
+
+\item[Link]: 10 Gbps, 1 Gbps or 100 Mbps Ethernet
+
+\item[Physical]: SFP+, CX4 or other 10 Gigabit ethernet cable, Cat6, Cat5e etc.
+
+\end{description}
+
+\section{Overview}
+
+Note that lower speed and ad-hoc data products may be transferred using the \emph{KATCP} control interface \cite{ffdbectl}.
+
+\subsection{Header}
+
+All data stream packets have a header of the following form:
+\begin{table}
+\begin{tabular}{|r|l|}
+\hline
+\emph{Number of bits} & \emph{Description} \\
+\hline
+(MSB) 16 & Magic Number (constant 0x4b52, in ascii \emph{KR}) \\
+      16 & Version identifier) \\
+      16 & Reserved \\
+(LSB) 16 & Number of options \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{description}
+
+\item[Magic number]:
+This is a constant value. All packets will start with the following 16 bit pattern: \emph{(msb) 0100 1011 0101 0010 (lsb)}.
+
+\item[Version identifier]:
+This field identifies the version of the packet format. Designed in case future packet structures differ. The version described here is 0003.
+
+\item[Reserved]:
+This field should be ignored. The space is reserved for future allocation.
+
+\item[Number of options]:
+The value stored in this field indicates the number of optional 64-bit fields following the header. Any attached data follows directly after this number of 64-bit fields.
+
+\end{description}
+
+\subsection{\emph{Options}: Optional Fields}
+
+The following table defines these standardised \emph{options} identifier codes and their meaning.
+\begin{table}
+\begin{tabular}{|l|l|l|}
+\hline
+\emph{Dec} & \emph{Hex} & \emph{Description} \\
+\hline
+ 0 & 0000 & NULL - Ignore \\
+ 1 & 0001 & Instrument type \\
+ 4 & 0004 & Data payload length \\
+ 5 & 0005 & Data payload offset \\
+13 & 000D & Stream control \\
+14 & 000E & Metadata packet counter \\
+48 & 0030 & Option descriptor \\
+49 & 0031 & Payload descriptor \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}

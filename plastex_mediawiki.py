@@ -12,8 +12,9 @@ class Renderer(Renderer):
     caption_type = 'figure'
     list_prefix = ''
     def default(self, node):
-		if node.nodeName == '\\': return u"<br>"
-		else: return unicode(node)
+        if node.nodeName == '\\': return u"<br>"
+        elif node.nodeName == '_': return u"_"
+        else: return unicode(node)
     def do_center(self, node):
         return '\n<center>%s</center>\n' % node
     def do_title(self, node):
