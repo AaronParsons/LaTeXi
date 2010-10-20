@@ -1,5 +1,6 @@
 \documentclass[11pt,english,twoside]{article}
 \usepackage{graphicx}
+\usepackage{amsmath}
 
 \begin{document}
 
@@ -10,7 +11,7 @@
 
 \section{Scope}
 
-under\_line under\_line
+Under\_score and a number \#.
 This document describes a datastream format suitable for use by radio astronomy instruments. The data stream is distinct from the \emph{KATCP} control protocol which follows a format described in \cite{ffdbectl}. 
 
 \section{Protocol Layers}
@@ -70,21 +71,29 @@ The value stored in this field indicates the number of optional 64-bit fields fo
 \subsection{\emph{Options}: Optional Fields}
 
 The following table defines these standardised \emph{options} identifier codes and their meaning.
+
 \begin{table}
-\begin{tabular}{|l|l|l|}
+\begin{tabular}{|c|c|c|}
+\emph{MSb} && \emph{LSb} \\
 \hline
-\emph{Dec} & \emph{Hex} & \emph{Description} \\
-\hline
- 0 & 0000 & NULL - Ignore \\
- 1 & 0001 & Instrument type \\
- 4 & 0004 & Data payload length \\
- 5 & 0005 & Data payload offset \\
-13 & 000D & Stream control \\
-14 & 000E & Metadata packet counter \\
-48 & 0030 & Option descriptor \\
-49 & 0031 & Payload descriptor \\
+Address Mode (1b) & Item ID (23b) & Address (40b)\\
 \hline
 \end{tabular}
+\caption{Example of an \textit{item pointer} using immediate-addressing in SPEAD-40-24}
 \end{table}
+
+\begin{equation}
+V_{ij}=\sum_i{i^2}
+\end{equation}
+
+\begin{eqnarray}
+V_{ij}&=\sum_i{i^2}\\
+W_{ij}&=\sum_i{i^2}
+\end{eqnarray}
+
+\begin{align}
+T_{ij}&=\sum_i{i^2}\\
+Y_{ij}&=\sum_i{i^2}
+\end{align}
 
 \end{document}

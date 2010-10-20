@@ -14,6 +14,7 @@ class Renderer(Renderer):
     def default(self, node):
         if node.nodeName == '\\': return u"<br>"
         elif node.nodeName == '_': return u"_"
+        elif node.nodeName == '#': return u"<nowiki>#</nowiki>"
         else: return unicode(node)
     def do_center(self, node):
         return '\n<center>%s</center>\n' % node
@@ -32,7 +33,19 @@ class Renderer(Renderer):
         txt = LABEL_REGX.sub('', txt)
         #from IPython.Shell import IPShellEmbed; IPShellEmbed()()
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
-    do_displaymath = do_eqnarray = do_equation
+    do_displaymath = do_equation
+    def do_eqnarray(self, node):
+        txt = unicode(node.source).strip()
+        txt = txt.replace(r'\begin{eqnarray}',r'\begin{align}')
+        txt = txt.replace(r'\end{eqnarray}',r'\end{align}')
+        txt = txt.replace('\[','').replace('\]','')
+        txt = LABEL_REGX.sub('', txt)
+        return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
+    def do_align(self, node):
+        txt = unicode(node.source).strip()
+        txt = LABEL_REGX.sub('', txt)
+        from IPython.Shell import IPShellEmbed; IPShellEmbed()()
+        return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     def do_section(self, node):
         return u'\n\n== %s ==\n\n%s' % (node.fullTitle, node)
     def do_subsection(self, node):
@@ -45,12 +58,14 @@ class Renderer(Renderer):
     def do_bf(self, node):
         return "'''%s'''" % unicode(node)
     def do_item(self, node):
-        #if self.list_prefix == '': from IPython.Shell import IPShellEmbed; IPShellEmbed()()
-        return "\n%s '''%s'''%s" % (self.list_prefix, node.argSource[1:-1], unicode(node).lstrip())
+        if len(node.argSource) > 0: return "\n%s '''%s'''%s" % (self.list_prefix, node.argSource[1:-1], unicode(node).strip())
+        else: return "\n%s %s" % (self.list_prefix, unicode(node).strip())
     def do_subitem(self, node):
-        return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).lstrip())
+        if len(node.argSource) > 0: return "\n%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, node.argSource[1:-1], unicode(node).strip())
+        else: return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).strip())
     def do_subsubitem(self, node):
-        return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node))
+        if len(node.argSource) > 0: return "\n%s%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, self.list_prefix, node.argSource[1:-1], unicode(node).strip())
+        else: return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node).strip())
     def do_description(self, node):
         self.list_prefix = ':'
         return unicode(node)
@@ -64,10 +79,13 @@ class Renderer(Renderer):
         return '<source lang="text">%s</source>' % unicode(node)
     def do_table(self, node):
         self.caption_type = 'table'
-        return unicode(node)
+        rv = '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
+        self.caption_type = ''
+        return rv
     def do_tabular(self, node):
         #return '\n<center>\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n</center>\n' % unicode(node)
-        return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
+        if self.caption_type == 'table': return unicode(node)
+        else: return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
     def do_caption(self, node):
         cap = "''%s''" % unicode(node)
         if self.caption_type == 'table':
