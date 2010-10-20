@@ -44,7 +44,7 @@ class Renderer(Renderer):
     def do_align(self, node):
         txt = unicode(node.source).strip()
         txt = LABEL_REGX.sub('', txt)
-        from IPython.Shell import IPShellEmbed; IPShellEmbed()()
+        #from IPython.Shell import IPShellEmbed; IPShellEmbed()()
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     def do_section(self, node):
         return u'\n\n== %s ==\n\n%s' % (node.fullTitle, node)
