@@ -12,21 +12,21 @@ class Renderer(Renderer):
     caption_type = 'figure'
     list_prefix = ''
     def default(self, node):
-        if node.nodeName == '\\': return u"<br>"
-        elif node.nodeName == '_': return u"_"
-        elif node.nodeName == '#': return u"<nowiki>#</nowiki>"
-        else: return unicode(node)
+        if node.nodeName == '\\': return "<br>"
+        elif node.nodeName == '_': return "_"
+        elif node.nodeName == '#': return "<nowiki>#</nowiki>"
+        else: return str(node)
     def do_center(self, node):
         return '\n<center>%s</center>\n' % node
     def do_title(self, node):
         return '\n<h1>%s</h1>\n' % node
     do_centering = do_center
     def do_par(self, node):
-        return '\n\n%s\n\n' % unicode(node)
+        return '\n\n%s\n\n' % str(node)
     def do_math(self, node):
-        return '<math>%s</math>' % unicode(node.source).replace('$','')
+        return '<math>%s</math>' % str(node.source).replace('$','')
     def do_equation(self, node):
-        txt = unicode(node.source).strip()
+        txt = str(node.source).strip()
         txt = txt.replace(r'\begin{equation}','')
         txt = txt.replace(r'\end{equation}','')
         txt = txt.replace('\[','').replace('\]','')
@@ -35,59 +35,59 @@ class Renderer(Renderer):
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     do_displaymath = do_equation
     def do_eqnarray(self, node):
-        txt = unicode(node.source).strip()
+        txt = str(node.source).strip()
         txt = txt.replace(r'\begin{eqnarray}',r'\begin{align}')
         txt = txt.replace(r'\end{eqnarray}',r'\end{align}')
         txt = txt.replace('\[','').replace('\]','')
         txt = LABEL_REGX.sub('', txt)
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     def do_align(self, node):
-        txt = unicode(node.source).strip()
+        txt = str(node.source).strip()
         txt = LABEL_REGX.sub('', txt)
         #from IPython.Shell import IPShellEmbed; IPShellEmbed()()
         return '\n\n<center><math>%s\,\!</math></center>\n\n' % txt
     def do_section(self, node):
-        return u'\n\n== %s ==\n\n%s' % (node.fullTitle, node)
+        return '\n\n== %s ==\n\n%s' % (node.fullTitle, node)
     def do_subsection(self, node):
-        return u'\n\n=== %s ===\n\n%s' % (node.fullTitle, node)
+        return '\n\n=== %s ===\n\n%s' % (node.fullTitle, node)
     def do_subsubsection(self, node):
-        return u'\n\n==== %s ====\n\n%s' % (node.fullTitle, node)
+        return '\n\n==== %s ====\n\n%s' % (node.fullTitle, node)
     def do_it(self, node):
-        return u"''%s''" % (node)
+        return "''%s''" % (node)
     do_emph = do_it
     def do_bf(self, node):
-        return "'''%s'''" % unicode(node)
+        return "'''%s'''" % str(node)
     def do_item(self, node):
-        if len(node.argSource) > 0: return "\n%s '''%s'''%s" % (self.list_prefix, node.argSource[1:-1], unicode(node).strip())
-        else: return "\n%s %s" % (self.list_prefix, unicode(node).strip())
+        if len(node.argSource) > 0: return "\n%s '''%s'''%s" % (self.list_prefix, node.argSource[1:-1], str(node).strip())
+        else: return "\n%s %s" % (self.list_prefix, str(node).strip())
     def do_subitem(self, node):
-        if len(node.argSource) > 0: return "\n%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, node.argSource[1:-1], unicode(node).strip())
-        else: return "\n%s%s %s" % (self.list_prefix, self.list_prefix, unicode(node).strip())
+        if len(node.argSource) > 0: return "\n%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, node.argSource[1:-1], str(node).strip())
+        else: return "\n%s%s %s" % (self.list_prefix, self.list_prefix, str(node).strip())
     def do_subsubitem(self, node):
-        if len(node.argSource) > 0: return "\n%s%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, self.list_prefix, node.argSource[1:-1], unicode(node).strip())
-        else: return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, unicode(node).strip())
+        if len(node.argSource) > 0: return "\n%s%s%s '''%s'''%s" % (self.list_prefix, self.list_prefix, self.list_prefix, node.argSource[1:-1], str(node).strip())
+        else: return "\n%s%s%s %s" % (self.list_prefix, self.list_prefix, self.list_prefix, str(node).strip())
     def do_description(self, node):
         self.list_prefix = ':'
-        return unicode(node)
+        return str(node)
     def do_itemize(self, node):
         self.list_prefix = '*'
-        return unicode(node)
+        return str(node)
     def do_enumerate(self, node):
         self.list_prefix = '#'
-        return unicode(node)
+        return str(node)
     def do_verbatim(self, node):
-        return '<source lang="text">%s</source>' % unicode(node)
+        return '<source lang="text">%s</source>' % str(node)
     def do_table(self, node):
         self.caption_type = 'table'
-        rv = '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
+        rv = '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % str(node)
         self.caption_type = ''
         return rv
     def do_tabular(self, node):
         #return '\n<center>\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n</center>\n' % unicode(node)
-        if self.caption_type == 'table': return unicode(node)
-        else: return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % unicode(node)
+        if self.caption_type == 'table': return str(node)
+        else: return '\n{|border="1" cellpadding="10" cellspacing="0"\n%s\n|}\n' % str(node)
     def do_caption(self, node):
-        cap = "''%s''" % unicode(node)
+        cap = "''%s''" % str(node)
         if self.caption_type == 'table':
             return '''\n|+align="bottom" style="color:#e76700;" |%s\n''' % cap
         elif self.caption_type == 'figure':
@@ -95,12 +95,12 @@ class Renderer(Renderer):
         else:
             return cap
     def do_ArrayRow(self, node):
-        return '\n|-\n%s\n' % unicode(node)
+        return '\n|-\n%s\n' % str(node)
     def do_ArrayCell(self, node):
-        return '\n| %s\n' % unicode(node)
+        return '\n| %s\n' % str(node)
     def do_figure(self, node):
         self.caption_type = 'figure'
-        return unicode(node)
+        return str(node)
     def do_includegraphics(self, node):
         return '[[File:%s|250px]]' % (node.attributes['file'])
             
