@@ -1,0 +1,19 @@
+{
+    "name": "LaTeXi",
+    "author": "Aaron Parsons",
+    "url": "https://github.com/AaronParsons/LaTeXi",
+    "description": "Renders <latex> tags.",
+    "version": "1.0",
+    "license-name": "GPL-2.0-or-later",
+    "type": "parserhook",
+    "requires": {
+        "MediaWiki": ">= 1.29.0"
+    },
+    "AutoloadClasses": {
+        "LaTeXi": "includes/LaTeXi.php"
+    },
+    "Hooks": {
+        "ParserFirstCallInit": "LaTeXi::init"
+    },
+    "manifest_version": 2
+}
