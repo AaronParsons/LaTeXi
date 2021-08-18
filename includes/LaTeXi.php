@@ -1,12 +1,12 @@
 <?php
 
-class LaTeXiExtension {
+class LaTeXi {
     // Register any render callbacks with the parser
-    public static function onParserFirstCallInit( Parser $parser ) {
-	$parser->setHook( 'latex', [ self::class, 'renderTagLatex' ] );
+    public static function init( Parser $parser ) {
+	    $parser->setHook( 'latex', [ self::class, 'renderLatex' ] );
     }
 
-    public static function renderTagLatex ( $input, array $args, Parser $parser, PPFrame $frame ) {
+    public static function renderLatex ( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgTmpDirectory;
         $dir = dirname(__FILE__);
 		$cmd = $dir.'/plastex_mediawiki.py '.$wgTmpDirectory;
