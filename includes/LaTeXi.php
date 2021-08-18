@@ -1,12 +1,12 @@
 <?php
-$wgExtensionFunctions[] = 'efLatex_Setup';
 
-function efLatex_Setup(){
-	global $wgParser;
-	$wgParser->setHook( 'latex', 'efLatex_Render' );
-}
+class LaTeXiExtension {
+    // Register any render callbacks with the parser
+    public static function onParserFirstCallInit( Parser $parser ) {
+	$parser->setHook( 'latex', [ self::class, 'renderTagLatex' ] );
+    }
 
-function efLatex_Render( $input, $args, $parser, $frame ) {
+    public static function renderTagLatex ( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgTmpDirectory;
         $dir = dirname(__FILE__);
 		$cmd = $dir.'/plastex_mediawiki.py '.$wgTmpDirectory;
@@ -27,6 +27,7 @@ function efLatex_Render( $input, $args, $parser, $frame ) {
         }
 		return $parser->recursiveTagParse($output, $frame );
 		//return $output;
+    }
 }
 
 ?>
